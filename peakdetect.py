@@ -25,13 +25,14 @@ import sys
 parser = argparse.ArgumentParser(description='Detects peaks in data. It does this by first calculating an estimate for the samples continuous distribution and then fitting that one with a small number of gaussians. The peaks are then taken as the gaussians\' means. The user can either specify the number of peaks using the -p argument, or use automatic detection. Parameters for the automatic detection can be set using the -m and -t arguments.', epilog='Original version written by Georg Rempfer <georg.rempfer@icp.uni-stuttgart.de>, Institute for Computational Physics, University of Stuttgart in 2017 at the 648. WE-Heraeus-Seminar in Bremen. Greetings to all the nanopore people (:')
 parser.add_argument('datafile', help='Path to input file. Data should be formatted as text columns separated by whitespace.')
 parser.add_argument('--column', '-c', default=3, type=int, help='Column to use as samples from the datafile. Starts counting at 0. Default is 3 (the k column in the files this program was originally written for).')
+parser.add_argument('--skip', '-s', default=1, type=int, help='Number of header lines to skip in data file. Default is 1.')
 parser.add_argument('--peaks', '-p', default=0, type=int, help='Number of peaks expected in the samples. By default the program tries to determine a minimum count of peaks to fit the data.')
 parser.add_argument('--max-peaks', '-m', default=6, type=int, help='Maximum number of peaks to try to fit in autodetection mode. Default is 6.')
 parser.add_argument('--fit-tolerance', '-t', default=0.04, type=int, help='Maximum fit error tolerated. The error is calculated as the maximum over all x values of abs( (kde(x)-fit(x)) / mean(kde) ). You can play with this value to make the autodetection choose the right number of peaks. Default is 0.04.')
 args = parser.parse_args()
 
 #read all data from file
-data = np.genfromtxt(args.datafile, skip_header=1)
+data = np.genfromtxt(args.datafile, skip_header=args.skip)
 samples = data[:,args.column] #select chosen column
 samples = samples[~np.isnan(samples)] #remove samples that are not numbers (shitty measurements denoted by placeholders)
 samples = np.sort(samples)
