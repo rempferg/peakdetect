@@ -69,8 +69,6 @@ if args.peaks != 0: #if number of peaks given by user
   popt, pcov = sp.optimize.curve_fit(multi_gauss, x_grid, kernel(x_grid), p)
 else: #try to autodetect number of peaks
   n = np.arange(1, args.max_peaks+1)
-  parameters = []
-  errors = np.array([np.sum((kernel(x_grid))**2)])
 
   #try number of peaks from 1 to given maximum
   for k in n:
@@ -88,8 +86,7 @@ else: #try to autodetect number of peaks
       popt, pcov = sp.optimize.curve_fit(multi_gauss, x_grid, kernel(x_grid), p)
       perr = np.max( np.abs( (kernel(x_grid)-multi_gauss(x_grid, *popt))/np.mean(kernel(x_grid)) ) )
     except:
-      parameters.append(None)
-      errors = np.append(errors, np.nan)
+      perr = np.nan
 
     #if fit error is smaller than specified, stop and use the current number of peaks
     if perr <= args.fit_tolerance:
